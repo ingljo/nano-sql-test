@@ -1,12 +1,27 @@
 <ion-header>
   <ion-toolbar>
     <ion-title>
-      Ionic Blank
+      NanoSQL test
     </ion-title>
   </ion-toolbar>
 </ion-header>
 
 <ion-content padding>
-  The world is your oyster.
-  <p>If you get lost, the <a target="_blank" rel="noopener" href="https://ionicframework.com/docs">docs</a> will be your guide.</p>
+  <ion-list>
+    <ion-item>
+      <ion-input type="text" [(ngModel)]="text"></ion-input>
+      <ion-button slot="end" (click)="insertNewTodoItem()">
+        <ion-icon name="add-circle"></ion-icon>
+      </ion-button>
+    </ion-item>
+    <ion-item *ngFor="let item of todoItems">
+      <ion-label text-wrap>Id: {{item.id }} Text: {{ item.text }}</ion-label>
+      <ion-button slot="end" (click)="deleteTodoItem(item.id)">
+        <ion-icon name="trash"></ion-icon>
+      </ion-button>
+    </ion-item>
+  </ion-list>
+  <ion-footer>
+    {{ result }}
+  </ion-footer>
 </ion-content>

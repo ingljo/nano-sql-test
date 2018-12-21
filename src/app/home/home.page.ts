@@ -35,6 +35,7 @@ export class HomePage implements OnInit, OnDestroy {
       mode: getMode()
     }).table('todo').model([
       { key: 'id', type: 'string', props: ['pk'] },
+      { key: 'secondaryIndex', type: 'string', props: ['idx'] },
       { key: '*', type: '*' },
     ]).connect();
     const adapter = await nSQL().extend('get_adapter');
@@ -44,16 +45,23 @@ export class HomePage implements OnInit, OnDestroy {
   }
 
   async insertNewTodoItem() {
-    const insertResult = await nSQL().table('todo').query('upsert', { id: this.createGuid(), text: this.text }).exec();
+    const newId = this.createGuid();
+    const insertResult = await nSQL().table('todo').query('upsert',
+      {
+        id: newId,
+        secondaryIndex: newId,
+        text: this.text,
+        timestamp: new Date().getTime(),
+      }).exec();
     this.result = JSON.stringify(insertResult);
     this.text = '';
   }
 
   async deleteTodoItem(id: string) {
-    // This does not work on SQL Lite Adapter, but works in browser with IndexDB Adapter
-    const deleteResult = await nSQL().table('todo').query('delete').where(['id', '=', id]).exec();
+    // This does not work on SQL Lite Adapter
+    const deleteResult = await nSQL().table('todo').query('delete').where(['secondaryIndex', '=', id]).exec();
     // The line below work on SQL Lite Adapter
-    // const deleteResult = await nSQL().table('todo').query('delete').where((x) => x.id === id).exec();
+    // const deleteResult = await nSQL().table('todo').query('delete').where(['id', '=', id]).exec();
 
     this.result = JSON.stringify(deleteResult);
   }
